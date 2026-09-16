@@ -109,10 +109,11 @@ button {
   background: transparent;
   color: var(--color-ink-soft);
   border-radius: 0.7rem;
-  padding: 0.55rem 0.4rem;
+  padding: 0.55rem 0.35rem;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  line-height: 1.15;
 }
 
 .segmented button[data-active="true"] {

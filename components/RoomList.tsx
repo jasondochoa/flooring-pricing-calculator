@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { MATERIAL_LABELS } from "@/lib/format";
+import { MATERIAL_SHORT } from "@/lib/format";
 import { emptyRoom, roomSqFt } from "@/lib/calc";
 import { MATERIAL_TYPES, type Room } from "@/lib/types";
 import { number } from "@/lib/format";
@@ -51,7 +51,9 @@ export function RoomList({
                         step={0.1}
                         className="field-input field-input-sm w-[4.5rem]"
                         value={room.lengthFt}
-                        onChange={(e) => update(room.id, { lengthFt: Number(e.target.value) || 0 })}
+                        onChange={(e) =>
+                          update(room.id, { lengthFt: Number(e.target.value) || 0, sqFtOverride: null })
+                        }
                       />
                       <span className="text-stone">×</span>
                       <input
@@ -60,7 +62,9 @@ export function RoomList({
                         step={0.1}
                         className="field-input field-input-sm w-[4.5rem]"
                         value={room.widthFt}
-                        onChange={(e) => update(room.id, { widthFt: Number(e.target.value) || 0 })}
+                        onChange={(e) =>
+                          update(room.id, { widthFt: Number(e.target.value) || 0, sqFtOverride: null })
+                        }
                       />
                     </div>
                   </td>
@@ -70,16 +74,17 @@ export function RoomList({
                       min={0}
                       step={0.1}
                       className="field-input field-input-sm w-[5.5rem]"
-                      placeholder={String(number(room.lengthFt * room.widthFt, 1))}
-                      value={room.sqFtOverride ?? ""}
-                      onChange={(e) =>
+                      value={Number(sf.toFixed(1))}
+                      onChange={(e) => {
+                        const next = Number(e.target.value) || 0;
+                        const measured = Math.max(0, room.lengthFt) * Math.max(0, room.widthFt);
                         update(room.id, {
-                          sqFtOverride: e.target.value === "" ? null : Number(e.target.value) || 0,
-                        })
-                      }
+                          sqFtOverride: Math.abs(next - measured) < 0.05 ? null : next,
+                        });
+                      }}
                     />
                     <div className="mt-1 text-[0.7rem] text-stone">
-                      {room.sqFtOverride != null ? "override" : `${number(sf, 1)} sf`}
+                      {room.sqFtOverride != null ? "manual sf" : `${number(sf, 1)} from L×W`}
                     </div>
                   </td>
                   <td>
@@ -92,7 +97,7 @@ export function RoomList({
                     >
                       {MATERIAL_TYPES.map((type) => (
                         <option key={type} value={type}>
-                          {MATERIAL_LABELS[type]}
+                          {MATERIAL_SHORT[type]}
                         </option>
                       ))}
                     </select>
